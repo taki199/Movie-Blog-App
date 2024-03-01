@@ -1,0 +1,38 @@
+<div class="author">
+    <h1 class="author__heading">Hi, Welcome </h1>
+    <p class="author__body">Movie Blog App </p>
+  </div>
+  
+  <img src="/img/8728.jpg" alt="person looking out through window" class="hero-image" width="981" height="528">
+  
+  <section class="articles">
+    <h2 class="articles__heading">Latest Movie Posts</h2>
+  
+    <ul class="article-ul">
+
+        <% data.forEach(post=> { %>
+         
+        
+      <li>
+        <a href="/post/<%= post._id %>">
+            <span><%= post.title %></span>
+            <span class="article-list_date"><%= post.createdAt.toDateString() %></span>
+        </a>
+      </li>
+      <% }) %>
+    </ul>
+
+    <% if (nextPage !==null) { %>
+        <a href="/?page=<%= nextPage %>" class="pagination">&lt;view Older Posts</a>
+     
+    <% } %>
+  
+  
+    
+   
+  
+    
+  
+  
+  
+  </section>
