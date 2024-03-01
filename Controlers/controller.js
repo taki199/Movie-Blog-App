@@ -176,24 +176,29 @@ module.exports = {
 
     },
     // get route to show dashboard of admin
-    showDash: async (req,res)=> {
+    showDash: async (req, res) => {
         try {
-            const locals={
-                title:'Dashboard',
-                description:'Admin Dashboard'
-
-            }
-            const data =await Post.find();
-            res.render('admin/dashboard',{
-                locals,
-                data,
-              layout:adminLayout
-            });
+          const locals = {
+            title: 'Dashboard',
+            description: 'Admin Dashboard'
+          };
+    
+          const data = await Post.find();
+    
+          // currentUser will contain the logged-in user information if available
+          const currentUser = req.currentUser;
+    
+          res.render('admin/dashboard', {
+            locals,
+            data,
+            currentUser, // Pass currentUser to the view
+            layout: adminLayout
+          });
         } catch (error) {
-            console.log(error)
-
-            
+          console.log(error);
+          // Handle error
         }
+      
         
     },
     // just get route to go to add Post Form
