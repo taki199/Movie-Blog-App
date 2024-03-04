@@ -49,23 +49,41 @@ module.exports = {
        
     },
     //find post by id 
-    idPost:async(req,res)=>{
-      
-       try {
-        
-        let slug =req.params.id
-        const data=await Post.findById({_id:slug})
-        const locals={
-            title:data.title,
-            description:data.description
+    idPost: async (req, res) => {
+        try {
+            const postId = req.params.id;
     
-           }
-        res.render('post',{ locals,data } )
-       } catch (error) {
-        console.log(error)
-        
-       }
+            // Fetch the post by its ID and populate the 'admin' field
+            const post = await Post.findById(postId).populate('admin');
+    
+            if (!post) {
+                // Handle case where post is not found
+                return res.status(404).send('Post not found');
+            }
+    
+            // Fetch the count of total documents
+           
+    
+            // Extract admin's username from the populated 'admin' field
+            const adminUsername = post.admin ? post.admin.username : 'Unknown';
+    
+            // Render the template with the post data
+            const locals = {
+                title: post.title,
+                description: post.description,
+                 // Assign count here
+            };
+    
+            res.render('post', { locals, data: post, adminUsername });
+        } catch (error) {
+            // Handle errors
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+        }
     },
+    
+    
+    
 
     // resaerch for posts for all users
 
@@ -187,12 +205,14 @@ module.exports = {
     
           // currentUser will contain the logged-in user information if available
           const currentUser = req.currentUser;
+          const count = await Post.countDocuments();
     
           res.render('admin/dashboard', {
             locals,
             data,
             currentUser, // Pass currentUser to the view
-            layout: adminLayout
+            layout: adminLayout,
+            count: count
           });
         } catch (error) {
           console.log(error);
@@ -224,32 +244,34 @@ module.exports = {
     },
 
     // add new post into db
-    adminCreatePost:async(req,res)=>{
+    adminCreatePost: async (req, res) => {
         try {
-
-          try {
-            const newPost= new Post({
-                title:req.body.title,
-                body:req.body.body
+            const { title, body } = req.body;
+    
+            // Check if currentUser is defined
+            if (!req.currentUser) {
+                return res.status(401).send('Unauthorized'); // Or handle unauthorized access as needed
+            }
+    
+            // Get the ID of the currently logged-in admin user
+            const adminId = req.currentUser._id;
+    
+            // Create a new post with the admin ID
+            const newPost = new Post({
+                title: title,
+                body: body,
+                admin: adminId // Set admin field to the ID of the current admin user
             });
-            await Post.create(newPost);
-            res.redirect('/dashboard')
-            
+    
+            await newPost.save();
+            res.redirect('/dashboard');
         } catch (error) {
-            console.log(error)
-            
+            console.error(error);
+            res.status(500).send('Internal Server Error');
         }
-           
-          
-          
-        } catch (error) {
-            console.log(error)
-
-            
-        }
-        
-
     },
+    
+    
     getEdit:async(req,res)=>{
         try {
             const locals={

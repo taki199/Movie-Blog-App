@@ -1,5 +1,7 @@
 <h1><%= data.title %></h1>
 <article class="article">
     <%= data.body %>
-
+    <p>Created By <%= adminUsername.toUpperCase() %></p>
+    <p>At <%= data.createdAt.toLocaleString() %></p> <!-- Access admin's username -->
+   
 </article>

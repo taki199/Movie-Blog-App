@@ -38,19 +38,27 @@ const decodeToken = async (req, res, next) => {
     }
 };
 
-const authMiddleware=(req,res,next)=>{
-    const token=req.cookies.token;
-    if(!token){
-        return res.status(401).json({message: "Unauthorized"})
+const authMiddleware = async (req, res, next) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.redirect('/admin');
     }
-    try{
-        const decoded=jwt.verify(token,jwtSecret);
-        req.userId = decoded.userId;
-        next()
-    }catch(error){
-         res.status(401).json({message: "Unauthorized"})
+    try {
+        const decoded = jwt.verify(token, jwtSecret);
+        const userId = decoded.userId;
+
+        // Fetch user by ID
+        const user = await User.findById(userId);
+
+        // Set currentUser in request object
+        req.currentUser = user || null;
+        next();
+    } catch (error) {
+        res.redirect('/admin');
+
     }
-}
+};
+
 
 router.get("/admin", controller.Admin)
 router.post("/admin",controller.logAdmin)
