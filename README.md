@@ -1,7 +1,7 @@
 to simply use the app :
 i haven't set up some pages so ..
 
-use /admin to log in :usename:houcine , password :taki1997
+Now u can Registre and log in 
 
 use /dashboard to edit/delete/update
 make sure you loged in before going to dashboard :)
